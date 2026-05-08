@@ -15,6 +15,12 @@ mvn spring-boot:run
 
 Service starts on `http://localhost:8080`.
 
+## How to run tests
+
+```bash
+mvn test
+```
+
 On startup, the app seeds a few flights:
 
 - `AA100` capacity 2
