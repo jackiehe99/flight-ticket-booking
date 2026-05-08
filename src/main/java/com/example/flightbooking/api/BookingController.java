@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -79,6 +80,20 @@ public class BookingController {
                         b.getCreatedAt()))
             .toList();
     return ResponseEntity.ok(body);
+  }
+
+  @PatchMapping("/{bookingId}")
+  public ResponseEntity<BookingDetailsResponse> patch(
+      @PathVariable UUID bookingId, @Valid @RequestBody BookingUpdateRequest request) {
+    Booking booking = bookingService.updatePassengerName(bookingId, request.passengerName());
+    return ResponseEntity.ok(
+        new BookingDetailsResponse(
+            booking.getId(),
+            booking.getFlightNumber(),
+            booking.getPassengerName(),
+            booking.getSeats(),
+            booking.getStatus().name(),
+            booking.getCreatedAt()));
   }
 }
 

@@ -54,6 +54,14 @@ public class BookingService {
     flight.release(booking.getSeats());
   }
 
+  @Transactional
+  public Booking updatePassengerName(UUID bookingId, String passengerName) {
+    Booking booking =
+        bookingRepository.findById(bookingId).orElseThrow(() -> new BookingNotFoundException(bookingId));
+    booking.updatePassengerName(passengerName);
+    return booking;
+  }
+
   @Transactional(readOnly = true)
   public Booking getBooking(UUID bookingId) {
     return bookingRepository.findById(bookingId).orElseThrow(() -> new BookingNotFoundException(bookingId));

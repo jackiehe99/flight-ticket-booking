@@ -81,3 +81,17 @@ curl -i "http://localhost:8080/api/bookings?status=CONFIRMED"
 curl -i "http://localhost:8080/api/bookings?flightNumber=AA100&status=CONFIRMED"
 ```
 
+### Update booking (mutable fields only)
+
+`PATCH /api/bookings/{bookingId}`
+
+Currently supported mutable fields:
+
+- `passengerName`
+
+Example:
+
+```bash
+curl -i -X PATCH "http://localhost:8080/api/bookings/00000000-0000-0000-0000-000000000000" -H "Content-Type: application/json" -d "{\"passengerName\":\"Janet Doe\"}"
+```
+

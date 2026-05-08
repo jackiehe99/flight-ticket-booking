@@ -80,5 +80,9 @@ public class Booking {
   public void cancel() {
     this.status = Status.CANCELLED;
   }
+
+  public void updatePassengerName(String passengerName) {
+    this.passengerName = passengerName;
+  }
 }
 
