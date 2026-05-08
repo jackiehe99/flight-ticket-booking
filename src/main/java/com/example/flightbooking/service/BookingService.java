@@ -4,6 +4,8 @@ import com.example.flightbooking.domain.Booking;
 import com.example.flightbooking.domain.Flight;
 import com.example.flightbooking.repo.BookingRepository;
 import com.example.flightbooking.repo.FlightRepository;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +57,20 @@ public class BookingService {
   @Transactional(readOnly = true)
   public Booking getBooking(UUID bookingId) {
     return bookingRepository.findById(bookingId).orElseThrow(() -> new BookingNotFoundException(bookingId));
+  }
+
+  @Transactional(readOnly = true)
+  public List<Booking> listBookings(Optional<String> flightNumber, Optional<Booking.Status> status) {
+    if (flightNumber.isPresent() && status.isPresent()) {
+      return bookingRepository.findAllByFlightNumberAndStatus(flightNumber.get(), status.get());
+    }
+    if (flightNumber.isPresent()) {
+      return bookingRepository.findAllByFlightNumber(flightNumber.get());
+    }
+    if (status.isPresent()) {
+      return bookingRepository.findAllByStatus(status.get());
+    }
+    return bookingRepository.findAll();
   }
 }
 

@@ -4,6 +4,8 @@ import com.example.flightbooking.domain.Booking;
 import com.example.flightbooking.service.BookingService;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -57,6 +60,25 @@ public class BookingController {
             booking.getSeats(),
             booking.getStatus().name(),
             booking.getCreatedAt()));
+  }
+
+  @GetMapping
+  public ResponseEntity<List<BookingDetailsResponse>> list(
+      @RequestParam(name = "flightNumber", required = false) Optional<String> flightNumber,
+      @RequestParam(name = "status", required = false) Optional<Booking.Status> status) {
+    List<BookingDetailsResponse> body =
+        bookingService.listBookings(flightNumber, status).stream()
+            .map(
+                b ->
+                    new BookingDetailsResponse(
+                        b.getId(),
+                        b.getFlightNumber(),
+                        b.getPassengerName(),
+                        b.getSeats(),
+                        b.getStatus().name(),
+                        b.getCreatedAt()))
+            .toList();
+    return ResponseEntity.ok(body);
   }
 }
 

@@ -64,3 +64,20 @@ Example:
 curl -i "http://localhost:8080/api/bookings/00000000-0000-0000-0000-000000000000"
 ```
 
+### List bookings (simple filters)
+
+`GET /api/bookings`
+
+Optional query params:
+
+- `status=CONFIRMED|CANCELLED`
+- `flightNumber=AA100`
+
+Examples:
+
+```bash
+curl -i "http://localhost:8080/api/bookings"
+curl -i "http://localhost:8080/api/bookings?status=CONFIRMED"
+curl -i "http://localhost:8080/api/bookings?flightNumber=AA100&status=CONFIRMED"
+```
+
