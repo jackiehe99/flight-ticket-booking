@@ -1,0 +1,40 @@
+# Maven / Java build output
+target/
+*.class
+
+# Logs
+*.log
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code
+.vscode/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# OS junk
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Env / secrets (if you add any later)
+.env
+*.pem
+*.key
+
