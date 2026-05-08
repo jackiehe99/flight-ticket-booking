@@ -68,6 +68,9 @@ curl -i "http://localhost:8080/api/bookings/00000000-0000-0000-0000-000000000000
 
 `GET /api/bookings`
 
+- **200 OK**: returns bookings (possibly empty)
+- **400 Bad Request**: invalid filter value (e.g. `status=INVALID`)
+
 Optional query params:
 
 - `status=CONFIRMED|CANCELLED`
@@ -84,6 +87,10 @@ curl -i "http://localhost:8080/api/bookings?flightNumber=AA100&status=CONFIRMED"
 ### Update booking (mutable fields only)
 
 `PATCH /api/bookings/{bookingId}`
+
+- **200 OK**: updated booking
+- **404 Not Found**: booking id does not exist
+- **400 Bad Request**: validation error
 
 Currently supported mutable fields:
 
