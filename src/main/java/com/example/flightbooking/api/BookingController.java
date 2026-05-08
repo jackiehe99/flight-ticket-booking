@@ -7,6 +7,7 @@ import java.net.URI;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,6 +44,19 @@ public class BookingController {
   public ResponseEntity<Void> cancel(@PathVariable UUID bookingId) {
     bookingService.cancelBooking(bookingId);
     return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/{bookingId}")
+  public ResponseEntity<BookingDetailsResponse> get(@PathVariable UUID bookingId) {
+    Booking booking = bookingService.getBooking(bookingId);
+    return ResponseEntity.ok(
+        new BookingDetailsResponse(
+            booking.getId(),
+            booking.getFlightNumber(),
+            booking.getPassengerName(),
+            booking.getSeats(),
+            booking.getStatus().name(),
+            booking.getCreatedAt()));
   }
 }
 

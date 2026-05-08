@@ -51,3 +51,16 @@ Example:
 curl -i -X DELETE "http://localhost:8080/api/bookings/00000000-0000-0000-0000-000000000000"
 ```
 
+### Get booking details
+
+`GET /api/bookings/{bookingId}`
+
+- **200 OK**: returns booking status/details
+- **404 Not Found**: booking id does not exist
+
+Example:
+
+```bash
+curl -i "http://localhost:8080/api/bookings/00000000-0000-0000-0000-000000000000"
+```
+

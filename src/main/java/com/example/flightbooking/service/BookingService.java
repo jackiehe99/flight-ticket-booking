@@ -51,5 +51,10 @@ public class BookingService {
     booking.cancel();
     flight.release(booking.getSeats());
   }
+
+  @Transactional(readOnly = true)
+  public Booking getBooking(UUID bookingId) {
+    return bookingRepository.findById(bookingId).orElseThrow(() -> new BookingNotFoundException(bookingId));
+  }
 }
 
