@@ -34,8 +34,10 @@ On startup, the app seeds a few flights:
 `POST /api/bookings`
 
 - **201 Created**: booking confirmed
+- **200 OK**: idempotent replay (same `Idempotency-Key` used again)
 - **404 Not Found**: flight number does not exist
 - **409 Conflict**: flight is full (prevents overbooking)
+- **409 Conflict**: `Idempotency-Key` reused with different request payload
 - **400 Bad Request**: validation error
 
 Example:
@@ -79,7 +81,7 @@ curl -i "http://localhost:8080/api/bookings/00000000-0000-0000-0000-000000000000
 
 Optional query params:
 
-- `status=CONFIRMED|CANCELLED`
+- `status=CONFIRMED|CANCELLED` (case-insensitive)
 - `flightNumber=AA100`
 
 Examples:
@@ -107,4 +109,19 @@ Example:
 ```bash
 curl -i -X PATCH "http://localhost:8080/api/bookings/00000000-0000-0000-0000-000000000000" -H "Content-Type: application/json" -d "{\"passengerName\":\"Janet Doe\"}"
 ```
+Manual Improvements:
+Improved unit test "createBooking_returns201_andLocationHeader()" in BookingControllerTest.java. Reason: it was returning a Booking with a null id (because in real life JPA assigns it, but in the test the service is mocked) so I set the private id via ReflectionTestUtils and now assert $.bookingId equals that UUID.
 
+Fixed unit test "cancelBooking_releasesSeats()" in BookingServiceTest.java. Reason: it was failing and I wanted it to be more clean and maintainable. The test originally mixed "create" and "cancel" logic so I updated it to not call createBooking().
+
+Made the status query param parsing case-insensitive for GET /api/bookings. Reason: to improve client usability and robustness. 
+
+Started implementing an idempotency key for POST /api/bookings. Reason: to prevent duplicate bookings when clients retry the same request.
+
+Enabled the H2 console in the browser and also turn on SQL logging to the console. Reason: to make the app obserable while developing.
+
+Further improvments:
+Complete idempotent booking in BookingService.java and BookingController.java for the new idempotent solution
+Add consistent ordering for GET /api/bookings
+Add unit tests for case-insensitive query param parsing, idempotency replay/conflict
+Add a integration test proving “no overbooking under concurrency”

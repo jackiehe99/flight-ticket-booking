@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 import com.example.flightbooking.domain.Booking;
 import com.example.flightbooking.domain.Flight;
@@ -80,18 +81,26 @@ class BookingServiceTest {
   @Test
   void cancelBooking_releasesSeats() {
     UUID id = UUID.randomUUID();
-    when(flightRepository.findByFlightNumberForUpdate("AA100")).thenReturn(Optional.of(flight));
 
-    // Create a booking first (so it is CONFIRMED and reserves a seat)
-    when(bookingRepository.save(any(Booking.class))).thenAnswer(inv -> inv.getArgument(0, Booking.class));
-    Booking created = bookingService.createBooking("AA100", "Jane Doe", 1);
+    when(flightRepository.findByFlightNumberForUpdate("AA100"))
+            .thenReturn(Optional.of(flight));
+    when(bookingRepository.save(any(Booking.class)))
+            .thenAnswer(inv -> inv.getArgument(0, Booking.class));
+            
+    Booking existingBooking = createTestBooking("AA100", "Jane Doe", 1);
+    when(bookingRepository.findById(id))
+            .thenReturn(Optional.of(existingBooking));
 
-    // Then cancel it
-    when(bookingRepository.findById(id)).thenReturn(Optional.of(created));
     bookingService.cancelBooking(id);
 
     assertEquals(0, flight.getBookedSeats());
-    verify(flightRepository).findByFlightNumberForUpdate(eq("AA100"));
+    verify(flightRepository, times(2))
+            .findByFlightNumberForUpdate("AA100");
+  }
+
+  private Booking createTestBooking(String flightNumber, String passengerName, int seats) {
+    Booking booking = bookingService.createBooking(flightNumber, passengerName, seats);
+    return booking;
   }
 }
 

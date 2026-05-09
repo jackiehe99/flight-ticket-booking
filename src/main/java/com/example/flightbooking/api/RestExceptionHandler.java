@@ -3,6 +3,7 @@ package com.example.flightbooking.api;
 import com.example.flightbooking.service.BookingNotFoundException;
 import com.example.flightbooking.service.FlightFullException;
 import com.example.flightbooking.service.FlightNotFoundException;
+import com.example.flightbooking.service.IdempotencyKeyConflictException;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -37,10 +38,22 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         .body(ApiError.of("FLIGHT_FULL", ex.getMessage()));
   }
 
+  @ExceptionHandler(IdempotencyKeyConflictException.class)
+  public ResponseEntity<ApiError> idempotencyConflict(IdempotencyKeyConflictException ex) {
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(ApiError.of("IDEMPOTENCY_KEY_CONFLICT", ex.getMessage()));
+  }
+
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   public ResponseEntity<ApiError> argumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
     String msg = ex.getName() + " is invalid";
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiError.of("VALIDATION_ERROR", msg));
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<ApiError> illegalArgument(IllegalArgumentException ex) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(ApiError.of("VALIDATION_ERROR", ex.getMessage()));
   }
 
   @Override

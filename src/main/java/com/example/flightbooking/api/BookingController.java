@@ -4,6 +4,7 @@ import com.example.flightbooking.domain.Booking;
 import com.example.flightbooking.service.BookingService;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.Locale;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -66,9 +68,10 @@ public class BookingController {
   @GetMapping
   public ResponseEntity<List<BookingDetailsResponse>> list(
       @RequestParam(name = "flightNumber", required = false) Optional<String> flightNumber,
-      @RequestParam(name = "status", required = false) Optional<Booking.Status> status) {
+      @RequestParam(name = "status", required = false) Optional<String> status) {
+    Optional<Booking.Status> parsedStatus = status.map(BookingController::parseStatus);
     List<BookingDetailsResponse> body =
-        bookingService.listBookings(flightNumber, status).stream()
+        bookingService.listBookings(flightNumber, parsedStatus).stream()
             .map(
                 b ->
                     new BookingDetailsResponse(
@@ -94,6 +97,14 @@ public class BookingController {
             booking.getSeats(),
             booking.getStatus().name(),
             booking.getCreatedAt()));
+  }
+
+  private static Booking.Status parseStatus(String raw) {
+    try {
+      return Booking.Status.valueOf(raw.trim().toUpperCase(Locale.ROOT));
+    } catch (RuntimeException ex) {
+      throw new IllegalArgumentException("status is invalid");
+    }
   }
 }
 

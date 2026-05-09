@@ -21,6 +21,7 @@ import com.example.flightbooking.service.FlightFullException;
 import com.example.flightbooking.service.FlightNotFoundException;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -41,6 +42,7 @@ class BookingControllerTest {
     UUID id = UUID.randomUUID();
     Booking booking = new Booking("AA100", "Jane Doe", 1);
     // Booking entity generates id internally; for this MVC test just ensure response contains something.
+    ReflectionTestUtils.setField(booking, "id", id);
     when(bookingService.createBooking(eq("AA100"), eq("Jane Doe"), eq(1))).thenReturn(booking);
 
     mvc.perform(
@@ -49,6 +51,7 @@ class BookingControllerTest {
                 .content("{\"flightNumber\":\"AA100\",\"passengerName\":\"Jane Doe\",\"seats\":1}"))
         .andExpect(status().isCreated())
         .andExpect(header().exists("Location"))
+        .andExpect(jsonPath("$.bookingId").value(id.toString()))
         .andExpect(jsonPath("$.status").value("CONFIRMED"));
   }
 
